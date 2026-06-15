@@ -154,8 +154,8 @@ export const PARTS: Part[] = [
     priceRange: [30, 60],
     description:
       "Real Gibeon meteorite slice. Statement piece. Check feet spacing.",
-    vendorName: "Namoki",
-    vendorUrl: "https://namokimods.com",
+    vendorName: "Secondhand Watches",
+    vendorUrl: "https://secondhandwatches.com",
     compatibility: ["nh35-feet"],
     requires: ["nh35-movement"],
   },
@@ -169,8 +169,8 @@ export const PARTS: Part[] = [
     priceUsd: mid(10, 18),
     priceRange: [10, 18],
     description: "Classic dive hand set. NH35 post sizes. Lumed.",
-    vendorName: "Namoki",
-    vendorUrl: "https://namokimods.com",
+    vendorName: "Secondhand Watches",
+    vendorUrl: "https://secondhandwatches.com",
     requires: ["nh35-movement"],
   },
   {
