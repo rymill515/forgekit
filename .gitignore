@@ -8,6 +8,8 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+# This repo uses bun.lock; npm's lockfile is local-only and should not be committed.
+package-lock.json
 dist
 dist-ssr
 .output

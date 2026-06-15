@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { RotateCcw } from "lucide-react";
 import { SiteNav } from "@/components/forge/SiteNav";
 import { SiteFooter } from "@/components/forge/SiteFooter";
 import { CategoryCard } from "@/components/forge/CategoryCard";
 import { StickyBuildFooter } from "@/components/forge/StickyBuildFooter";
+import { BuildSummarySheet } from "@/components/forge/BuildSummarySheet";
 import { BuildNotes } from "@/components/forge/BuildNotes";
 import { CATEGORIES } from "@/data/categories";
 import { partById } from "@/data/parts";
@@ -32,8 +33,17 @@ export const Route = createFileRoute("/build")({
 });
 
 function BuildPage() {
-  const { build, setSelection, setName, setNotes, reset } = useBuild();
+  const {
+    build,
+    setSelection,
+    setStatus,
+    setRetailComparison,
+    setName,
+    setNotes,
+    reset,
+  } = useBuild();
   const warnings = useCompatibility(build);
+  const [summaryOpen, setSummaryOpen] = useState(false);
 
   const total = useMemo(() => {
     return Object.values(build.selections).reduce((sum, id) => {
@@ -100,7 +110,18 @@ function BuildPage() {
         total={total}
         warningCount={warnings.length}
         onRename={setName}
+        onOpenSummary={() => setSummaryOpen(true)}
       />
+
+      <BuildSummarySheet
+        open={summaryOpen}
+        onOpenChange={setSummaryOpen}
+        build={build}
+        total={total}
+        onStatusChange={setStatus}
+        onRetailChange={setRetailComparison}
+      />
+
       <SiteFooter />
     </div>
   );

@@ -1,9 +1,25 @@
 import type { Category } from "@/data/categories";
 
+/** Purchase progress for a selected part. */
+export type PartStatus = "researching" | "ordered" | "received";
+
+export const STATUS_ORDER: PartStatus[] = ["researching", "ordered", "received"];
+
+export const STATUS_META: Record<PartStatus, { label: string; dot: string }> = {
+  // `dot` is a CSS color expression for the status indicator.
+  researching: { label: "Researching", dot: "var(--forge-text-muted)" },
+  ordered: { label: "Ordered", dot: "var(--forge-accent)" },
+  received: { label: "Received", dot: "var(--forge-success)" },
+};
+
 export type Build = {
   name: string;
   notes: string;
   selections: Partial<Record<Category, string>>;
+  /** Purchase status per selected category. Absent = "researching". */
+  statuses: Partial<Record<Category, PartStatus>>;
+  /** Retail price the user is comparing against, for the savings calc. */
+  retailComparison: number | null;
   updatedAt: string;
 };
 
@@ -13,6 +29,8 @@ export const defaultBuild = (): Build => ({
   name: "My Build",
   notes: "",
   selections: {},
+  statuses: {},
+  retailComparison: null,
   updatedAt: new Date().toISOString(),
 });
 

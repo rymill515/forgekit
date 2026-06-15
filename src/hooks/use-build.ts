@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Category } from "@/data/categories";
 import {
   type Build,
+  type PartStatus,
   defaultBuild,
   loadBuild,
   saveBuild,
@@ -30,10 +31,36 @@ export function useBuild() {
   const setSelection = useCallback((category: Category, partId: string | null) => {
     setBuild((b) => {
       const next = { ...b.selections };
-      if (partId === null) delete next[category];
-      else next[category] = partId;
-      return { ...b, selections: next, updatedAt: new Date().toISOString() };
+      const nextStatuses = { ...b.statuses };
+      if (partId === null) {
+        delete next[category];
+        delete nextStatuses[category];
+      } else {
+        next[category] = partId;
+      }
+      return {
+        ...b,
+        selections: next,
+        statuses: nextStatuses,
+        updatedAt: new Date().toISOString(),
+      };
     });
+  }, []);
+
+  const setStatus = useCallback((category: Category, status: PartStatus) => {
+    setBuild((b) => ({
+      ...b,
+      statuses: { ...b.statuses, [category]: status },
+      updatedAt: new Date().toISOString(),
+    }));
+  }, []);
+
+  const setRetailComparison = useCallback((value: number | null) => {
+    setBuild((b) => ({
+      ...b,
+      retailComparison: value,
+      updatedAt: new Date().toISOString(),
+    }));
   }, []);
 
   const setName = useCallback((name: string) => {
@@ -49,5 +76,14 @@ export function useBuild() {
     setBuild(defaultBuild());
   }, []);
 
-  return { build, hydrated, setSelection, setName, setNotes, reset };
+  return {
+    build,
+    hydrated,
+    setSelection,
+    setStatus,
+    setRetailComparison,
+    setName,
+    setNotes,
+    reset,
+  };
 }

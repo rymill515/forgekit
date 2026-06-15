@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Save, Pencil, AlertTriangle } from "lucide-react";
+import { Save, Pencil, AlertTriangle, Receipt } from "lucide-react";
 import type { Build } from "@/lib/build-storage";
 import { CATEGORIES } from "@/data/categories";
 
@@ -8,9 +8,16 @@ type Props = {
   total: number;
   warningCount: number;
   onRename: (name: string) => void;
+  onOpenSummary: () => void;
 };
 
-export function StickyBuildFooter({ build, total, warningCount, onRename }: Props) {
+export function StickyBuildFooter({
+  build,
+  total,
+  warningCount,
+  onRename,
+  onOpenSummary,
+}: Props) {
   const selectedCount = Object.values(build.selections).filter(Boolean).length;
   const totalCategories = CATEGORIES.length;
   const [editing, setEditing] = useState(false);
@@ -88,6 +95,14 @@ export function StickyBuildFooter({ build, total, warningCount, onRename }: Prop
               ${total.toFixed(2)}
             </p>
           </div>
+          <button
+            type="button"
+            onClick={onOpenSummary}
+            className="inline-flex items-center gap-2 rounded-lg bg-[color:var(--forge-accent)] px-3 py-2 text-xs font-semibold text-[color:var(--forge-accent-text)] transition-colors hover:bg-[color:var(--forge-accent-hover)]"
+          >
+            <Receipt className="h-3.5 w-3.5" />
+            Summary
+          </button>
           <span
             className={`inline-flex items-center gap-1 text-xs text-[color:var(--forge-success)] transition-opacity ${
               saved ? "opacity-100" : "opacity-0"
