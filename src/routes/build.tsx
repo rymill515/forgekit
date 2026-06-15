@@ -35,12 +35,18 @@ export const Route = createFileRoute("/build")({
 function BuildPage() {
   const {
     build,
+    builds,
+    activeId,
     setSelection,
     setStatus,
     setRetailComparison,
     setName,
     setNotes,
     reset,
+    newBuild,
+    duplicateBuild,
+    switchBuild,
+    deleteBuild,
   } = useBuild();
   const warnings = useCompatibility(build);
   const [summaryOpen, setSummaryOpen] = useState(false);
@@ -107,10 +113,16 @@ function BuildPage() {
 
       <StickyBuildFooter
         build={build}
+        builds={builds}
+        activeId={activeId}
         total={total}
         warningCount={warnings.length}
         onRename={setName}
         onOpenSummary={() => setSummaryOpen(true)}
+        onSwitch={switchBuild}
+        onNew={newBuild}
+        onDuplicate={duplicateBuild}
+        onDelete={deleteBuild}
       />
 
       <BuildSummarySheet

@@ -1,83 +1,165 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Category } from "@/data/categories";
 import {
   type Build,
+  type BuildCollection,
   type PartStatus,
   defaultBuild,
-  loadBuild,
-  saveBuild,
-  clearBuild,
+  defaultCollection,
+  loadCollection,
+  saveCollection,
 } from "@/lib/build-storage";
 
+/** Pick a name that doesn't collide with existing builds. */
+function uniqueName(base: string, builds: Build[]): string {
+  const names = new Set(builds.map((b) => b.name));
+  if (!names.has(base)) return base;
+  let n = 2;
+  while (names.has(`${base} ${n}`)) n++;
+  return `${base} ${n}`;
+}
+
 export function useBuild() {
-  const [build, setBuild] = useState<Build>(() => defaultBuild());
+  const [collection, setCollection] = useState<BuildCollection>(() =>
+    defaultCollection(),
+  );
   const [hydrated, setHydrated] = useState(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    setBuild(loadBuild());
+    setCollection(loadCollection());
     setHydrated(true);
   }, []);
 
   useEffect(() => {
     if (!hydrated) return;
     if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => saveBuild(build), 250);
+    saveTimer.current = setTimeout(() => saveCollection(collection), 250);
     return () => {
       if (saveTimer.current) clearTimeout(saveTimer.current);
     };
-  }, [build, hydrated]);
+  }, [collection, hydrated]);
 
-  const setSelection = useCallback((category: Category, partId: string | null) => {
-    setBuild((b) => {
-      const next = { ...b.selections };
-      const nextStatuses = { ...b.statuses };
-      if (partId === null) {
-        delete next[category];
-        delete nextStatuses[category];
-      } else {
-        next[category] = partId;
-      }
-      return {
+  const build = useMemo(
+    () =>
+      collection.builds.find((b) => b.id === collection.activeId) ??
+      collection.builds[0],
+    [collection],
+  );
+
+  /** Apply an update to the active build, stamping updatedAt. */
+  const updateActive = useCallback((patch: (b: Build) => Build) => {
+    setCollection((c) => ({
+      ...c,
+      builds: c.builds.map((b) =>
+        b.id === c.activeId
+          ? { ...patch(b), updatedAt: new Date().toISOString() }
+          : b,
+      ),
+    }));
+  }, []);
+
+  const setSelection = useCallback(
+    (category: Category, partId: string | null) => {
+      updateActive((b) => {
+        const next = { ...b.selections };
+        const nextStatuses = { ...b.statuses };
+        if (partId === null) {
+          delete next[category];
+          delete nextStatuses[category];
+        } else {
+          next[category] = partId;
+        }
+        return { ...b, selections: next, statuses: nextStatuses };
+      });
+    },
+    [updateActive],
+  );
+
+  const setStatus = useCallback(
+    (category: Category, status: PartStatus) => {
+      updateActive((b) => ({
         ...b,
-        selections: next,
-        statuses: nextStatuses,
-        updatedAt: new Date().toISOString(),
-      };
+        statuses: { ...b.statuses, [category]: status },
+      }));
+    },
+    [updateActive],
+  );
+
+  const setRetailComparison = useCallback(
+    (value: number | null) => {
+      updateActive((b) => ({ ...b, retailComparison: value }));
+    },
+    [updateActive],
+  );
+
+  const setName = useCallback(
+    (name: string) => {
+      updateActive((b) => ({ ...b, name }));
+    },
+    [updateActive],
+  );
+
+  const setNotes = useCallback(
+    (notes: string) => {
+      updateActive((b) => ({ ...b, notes }));
+    },
+    [updateActive],
+  );
+
+  /** Clear the active build's contents, keeping its id and name. */
+  const reset = useCallback(() => {
+    updateActive((b) => ({
+      ...b,
+      selections: {},
+      statuses: {},
+      notes: "",
+      retailComparison: null,
+    }));
+  }, [updateActive]);
+
+  const newBuild = useCallback(() => {
+    setCollection((c) => {
+      const created = defaultBuild(uniqueName("My Build", c.builds));
+      return { activeId: created.id, builds: [...c.builds, created] };
     });
   }, []);
 
-  const setStatus = useCallback((category: Category, status: PartStatus) => {
-    setBuild((b) => ({
-      ...b,
-      statuses: { ...b.statuses, [category]: status },
-      updatedAt: new Date().toISOString(),
-    }));
+  const duplicateBuild = useCallback((id: string) => {
+    setCollection((c) => {
+      const src = c.builds.find((b) => b.id === id);
+      if (!src) return c;
+      const copy = defaultBuild(uniqueName(`${src.name} copy`, c.builds));
+      const created: Build = {
+        ...src,
+        id: copy.id,
+        name: copy.name,
+        updatedAt: copy.updatedAt,
+      };
+      return { activeId: created.id, builds: [...c.builds, created] };
+    });
   }, []);
 
-  const setRetailComparison = useCallback((value: number | null) => {
-    setBuild((b) => ({
-      ...b,
-      retailComparison: value,
-      updatedAt: new Date().toISOString(),
-    }));
+  const switchBuild = useCallback((id: string) => {
+    setCollection((c) =>
+      c.builds.some((b) => b.id === id) ? { ...c, activeId: id } : c,
+    );
   }, []);
 
-  const setName = useCallback((name: string) => {
-    setBuild((b) => ({ ...b, name, updatedAt: new Date().toISOString() }));
-  }, []);
-
-  const setNotes = useCallback((notes: string) => {
-    setBuild((b) => ({ ...b, notes, updatedAt: new Date().toISOString() }));
-  }, []);
-
-  const reset = useCallback(() => {
-    clearBuild();
-    setBuild(defaultBuild());
+  const deleteBuild = useCallback((id: string) => {
+    setCollection((c) => {
+      const remaining = c.builds.filter((b) => b.id !== id);
+      if (remaining.length === 0) return defaultCollection();
+      const activeId =
+        c.activeId === id ? remaining[0].id : c.activeId;
+      return { activeId, builds: remaining };
+    });
   }, []);
 
   return {
     build,
+    builds: collection.builds,
+    activeId: collection.activeId,
     hydrated,
     setSelection,
     setStatus,
@@ -85,5 +167,9 @@ export function useBuild() {
     setName,
     setNotes,
     reset,
+    newBuild,
+    duplicateBuild,
+    switchBuild,
+    deleteBuild,
   };
 }

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { ExternalLink, PiggyBank, TrendingDown } from "lucide-react";
+import { PiggyBank, TrendingDown } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
+import { VendorLink } from "@/components/forge/VendorLink";
 import { CATEGORIES } from "@/data/categories";
 import { partById } from "@/data/parts";
 import {
@@ -127,15 +128,10 @@ export function BuildSummarySheet({
                         {part.brand} · {part.name}
                       </p>
                       {part.vendorUrl && (
-                        <a
-                          href={part.vendorUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-[11px] text-[color:var(--forge-text-secondary)] hover:text-[color:var(--forge-accent)]"
-                        >
-                          {part.vendorName ?? "Vendor"}
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
+                        <VendorLink
+                          url={part.vendorUrl}
+                          vendorName={part.vendorName}
+                        />
                       )}
                     </div>
                   </div>

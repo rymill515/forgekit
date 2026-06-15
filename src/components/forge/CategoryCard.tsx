@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { ChevronDown, ExternalLink, Check, AlertTriangle } from "lucide-react";
+import { ChevronDown, Check, AlertTriangle } from "lucide-react";
 import type { CategoryMeta } from "@/data/categories";
 import { partById, partsByCategory, type Part } from "@/data/parts";
 import { predictWarning } from "@/hooks/use-compatibility";
 import type { Build } from "@/lib/build-storage";
+import { VendorLink } from "@/components/forge/VendorLink";
 
 type Props = {
   meta: CategoryMeta;
@@ -114,15 +115,7 @@ function PartTile({
       </button>
       <div className="flex items-center justify-between gap-2">
         {part.vendorUrl ? (
-          <a
-            href={part.vendorUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1 text-[11px] text-[color:var(--forge-text-secondary)] hover:text-[color:var(--forge-accent)]"
-          >
-            {part.vendorName ?? "Vendor"}
-            <ExternalLink className="h-3 w-3" />
-          </a>
+          <VendorLink url={part.vendorUrl} vendorName={part.vendorName} />
         ) : (
           <span />
         )}

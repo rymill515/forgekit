@@ -2,21 +2,34 @@ import { useEffect, useRef, useState } from "react";
 import { Save, Pencil, AlertTriangle, Receipt } from "lucide-react";
 import type { Build } from "@/lib/build-storage";
 import { CATEGORIES } from "@/data/categories";
+import { BuildSwitcher } from "@/components/forge/BuildSwitcher";
 
 type Props = {
   build: Build;
+  builds: Build[];
+  activeId: string;
   total: number;
   warningCount: number;
   onRename: (name: string) => void;
   onOpenSummary: () => void;
+  onSwitch: (id: string) => void;
+  onNew: () => void;
+  onDuplicate: (id: string) => void;
+  onDelete: (id: string) => void;
 };
 
 export function StickyBuildFooter({
   build,
+  builds,
+  activeId,
   total,
   warningCount,
   onRename,
   onOpenSummary,
+  onSwitch,
+  onNew,
+  onDuplicate,
+  onDelete,
 }: Props) {
   const selectedCount = Object.values(build.selections).filter(Boolean).length;
   const totalCategories = CATEGORIES.length;
@@ -64,16 +77,25 @@ export function StickyBuildFooter({
               className="w-full max-w-xs rounded-md border border-[color:var(--forge-border-strong)] bg-[color:var(--forge-bg)] px-2 py-1 font-display text-sm font-semibold outline-none focus:border-[color:var(--forge-accent)]"
             />
           ) : (
-            <button
-              type="button"
-              onClick={() => setEditing(true)}
-              className="group flex min-w-0 items-center gap-2 text-left"
-            >
-              <span className="truncate font-display text-sm font-semibold">
-                {build.name}
-              </span>
-              <Pencil className="h-3 w-3 text-[color:var(--forge-text-muted)] opacity-0 transition-opacity group-hover:opacity-100" />
-            </button>
+            <div className="flex min-w-0 items-center gap-1">
+              <BuildSwitcher
+                builds={builds}
+                activeId={activeId}
+                activeName={build.name}
+                onSwitch={onSwitch}
+                onNew={onNew}
+                onDuplicate={onDuplicate}
+                onDelete={onDelete}
+              />
+              <button
+                type="button"
+                onClick={() => setEditing(true)}
+                aria-label="Rename build"
+                className="rounded-md p-1 text-[color:var(--forge-text-muted)] transition-colors hover:bg-[color:var(--forge-card-hover)] hover:text-[color:var(--forge-text-primary)]"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+              </button>
+            </div>
           )}
           <span className="hidden text-xs text-[color:var(--forge-text-muted)] sm:inline">
             {selectedCount}/{totalCategories} parts

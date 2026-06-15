@@ -13,6 +13,8 @@ export const STATUS_META: Record<PartStatus, { label: string; dot: string }> = {
 };
 
 export type Build = {
+  /** Stable id so builds can be saved and switched between. */
+  id: string;
   name: string;
   notes: string;
   selections: Partial<Record<Category, string>>;
@@ -23,10 +25,29 @@ export type Build = {
   updatedAt: string;
 };
 
-const KEY = "watchforge:build:v1";
+/** Multiple saved builds plus which one is currently open. */
+export type BuildCollection = {
+  activeId: string;
+  builds: Build[];
+};
 
-export const defaultBuild = (): Build => ({
-  name: "My Build",
+const KEY = "watchforge:builds:v2";
+const LEGACY_KEY = "watchforge:build:v1";
+
+export function newId(): string {
+  try {
+    if (typeof crypto !== "undefined" && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+  } catch {
+    // fall through
+  }
+  return `build-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+}
+
+export const defaultBuild = (name = "My Build"): Build => ({
+  id: newId(),
+  name,
   notes: "",
   selections: {},
   statuses: {},
@@ -34,28 +55,50 @@ export const defaultBuild = (): Build => ({
   updatedAt: new Date().toISOString(),
 });
 
-export function loadBuild(): Build {
-  if (typeof window === "undefined") return defaultBuild();
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return defaultBuild();
-    const parsed = JSON.parse(raw) as Build;
-    return { ...defaultBuild(), ...parsed };
-  } catch {
-    return defaultBuild();
-  }
+/** Backfill any fields missing from a stored build (forward-compat). */
+function normalizeBuild(b: Partial<Build>): Build {
+  return { ...defaultBuild(), ...b, id: b.id ?? newId() };
 }
 
-export function saveBuild(build: Build) {
+export const defaultCollection = (): BuildCollection => {
+  const first = defaultBuild();
+  return { activeId: first.id, builds: [first] };
+};
+
+export function loadCollection(): BuildCollection {
+  if (typeof window === "undefined") return defaultCollection();
+  try {
+    const raw = window.localStorage.getItem(KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as BuildCollection;
+      const builds = (parsed.builds ?? []).map(normalizeBuild);
+      if (builds.length === 0) return defaultCollection();
+      const activeId = builds.some((b) => b.id === parsed.activeId)
+        ? parsed.activeId
+        : builds[0].id;
+      return { activeId, builds };
+    }
+
+    // One-time migration from the single-build (v1) format.
+    const legacy = window.localStorage.getItem(LEGACY_KEY);
+    if (legacy) {
+      const build = normalizeBuild(JSON.parse(legacy) as Partial<Build>);
+      const collection = { activeId: build.id, builds: [build] };
+      saveCollection(collection);
+      window.localStorage.removeItem(LEGACY_KEY);
+      return collection;
+    }
+  } catch {
+    // fall through to a fresh collection
+  }
+  return defaultCollection();
+}
+
+export function saveCollection(collection: BuildCollection) {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(KEY, JSON.stringify(build));
+    window.localStorage.setItem(KEY, JSON.stringify(collection));
   } catch {
     // ignore quota errors
   }
-}
-
-export function clearBuild() {
-  if (typeof window === "undefined") return;
-  window.localStorage.removeItem(KEY);
 }
