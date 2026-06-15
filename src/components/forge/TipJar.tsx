@@ -1,7 +1,6 @@
 import { Coffee } from "lucide-react";
 
-// Replace with your handle when ready.
-export const BMAC_URL = "https://www.buymeacoffee.com/your-handle";
+export const BMAC_URL = "https://buymeacoffee.com/rymill515";
 
 export function TipJarButton({ className = "" }: { className?: string }) {
   return (
