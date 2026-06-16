@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as BuildRouteImport } from './routes/build'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SupportRoute = SupportRouteImport.update({
@@ -29,6 +30,11 @@ const BuildRoute = BuildRouteImport.update({
   path: '/build',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +43,14 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/build': typeof BuildRoute
   '/learn': typeof LearnRoute
   '/support': typeof SupportRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/build': typeof BuildRoute
   '/learn': typeof LearnRoute
   '/support': typeof SupportRoute
@@ -50,20 +58,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/build': typeof BuildRoute
   '/learn': typeof LearnRoute
   '/support': typeof SupportRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/build' | '/learn' | '/support'
+  fullPaths: '/' | '/auth' | '/build' | '/learn' | '/support'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/build' | '/learn' | '/support'
-  id: '__root__' | '/' | '/build' | '/learn' | '/support'
+  to: '/' | '/auth' | '/build' | '/learn' | '/support'
+  id: '__root__' | '/' | '/auth' | '/build' | '/learn' | '/support'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
   BuildRoute: typeof BuildRoute
   LearnRoute: typeof LearnRoute
   SupportRoute: typeof SupportRoute
@@ -92,6 +102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BuildRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +121,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
   BuildRoute: BuildRoute,
   LearnRoute: LearnRoute,
   SupportRoute: SupportRoute,
