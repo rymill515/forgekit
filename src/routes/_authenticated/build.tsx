@@ -12,7 +12,7 @@ import { partById } from "@/data/parts";
 import { useBuild } from "@/hooks/use-build";
 import { useCompatibility } from "@/hooks/use-compatibility";
 
-export const Route = createFileRoute("/build")({
+export const Route = createFileRoute("/_authenticated/build")({
   head: () => ({
     meta: [
       { title: "Build configurator — WatchForge" },
