@@ -9,6 +9,8 @@ import {
   loadCollection,
   saveCollection,
 } from "@/lib/build-storage";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 
 /** Pick a name that doesn't collide with existing builds. */
 function uniqueName(base: string, builds: Build[]): string {
