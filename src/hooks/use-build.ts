@@ -22,25 +22,75 @@ function uniqueName(base: string, builds: Build[]): string {
 }
 
 export function useBuild() {
+  const { user, loading: authLoading } = useAuth();
   const [collection, setCollection] = useState<BuildCollection>(() =>
     defaultCollection(),
   );
   const [hydrated, setHydrated] = useState(false);
+  const [cloudSynced, setCloudSynced] = useState(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cloudTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastUserIdRef = useRef<string | null>(null);
 
+  // Hydrate from localStorage on mount.
   useEffect(() => {
     setCollection(loadCollection());
     setHydrated(true);
   }, []);
 
+  // Pull from cloud when the signed-in user changes; merge by newest updatedAt per build.
+  useEffect(() => {
+    if (!hydrated || authLoading) return;
+    if (!user) {
+      lastUserIdRef.current = null;
+      setCloudSynced(false);
+      return;
+    }
+    if (lastUserIdRef.current === user.id) return;
+    lastUserIdRef.current = user.id;
+    setCloudSynced(false);
+
+    (async () => {
+      const { data, error } = await supabase
+        .from("user_builds")
+        .select("collection")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (error) {
+        console.error("Cloud load failed", error);
+        setCloudSynced(true);
+        return;
+      }
+      if (data?.collection) {
+        const remote = data.collection as BuildCollection;
+        setCollection((local) => mergeCollections(local, remote));
+      }
+      setCloudSynced(true);
+    })();
+  }, [user, authLoading, hydrated]);
+
+  // Persist to localStorage and (if signed in) cloud.
   useEffect(() => {
     if (!hydrated) return;
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => saveCollection(collection), 250);
+
+    if (user && cloudSynced) {
+      if (cloudTimer.current) clearTimeout(cloudTimer.current);
+      cloudTimer.current = setTimeout(async () => {
+        const { error } = await supabase.from("user_builds").upsert({
+          user_id: user.id,
+          collection: collection as unknown as Record<string, unknown>,
+          updated_at: new Date().toISOString(),
+        });
+        if (error) console.error("Cloud save failed", error);
+      }, 800);
+    }
     return () => {
       if (saveTimer.current) clearTimeout(saveTimer.current);
+      if (cloudTimer.current) clearTimeout(cloudTimer.current);
     };
-  }, [collection, hydrated]);
+  }, [collection, hydrated, user, cloudSynced]);
 
   const build = useMemo(
     () =>
