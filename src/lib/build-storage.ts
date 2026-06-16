@@ -12,12 +12,28 @@ export const STATUS_META: Record<PartStatus, { label: string; dot: string }> = {
   received: { label: "Received", dot: "var(--forge-success)" },
 };
 
+/** A part the user entered by hand when the curated options don't fit. */
+export type CustomPart = {
+  name: string;
+  brand?: string;
+  priceUsd: number;
+  vendorName?: string;
+  vendorUrl?: string;
+  note?: string;
+};
+
+/** Sentinel stored in `selections[category]` when the user's own custom
+ *  part is the active choice for that category. */
+export const CUSTOM_SELECTION = "__custom__";
+
 export type Build = {
   /** Stable id so builds can be saved and switched between. */
   id: string;
   name: string;
   notes: string;
   selections: Partial<Record<Category, string>>;
+  /** User-entered parts per category, used when selection is CUSTOM_SELECTION. */
+  customParts: Partial<Record<Category, CustomPart>>;
   /** Purchase status per selected category. Absent = "researching". */
   statuses: Partial<Record<Category, PartStatus>>;
   /** Retail price the user is comparing against, for the savings calc. */
@@ -50,6 +66,7 @@ export const defaultBuild = (name = "My Build"): Build => ({
   name,
   notes: "",
   selections: {},
+  customParts: {},
   statuses: {},
   retailComparison: null,
   updatedAt: new Date().toISOString(),

@@ -91,7 +91,7 @@ export function StickyBuildFooter({
                 type="button"
                 onClick={() => setEditing(true)}
                 aria-label="Rename build"
-                className="rounded-md p-1 text-[color:var(--forge-text-muted)] transition-colors hover:bg-[color:var(--forge-card-hover)] hover:text-[color:var(--forge-text-primary)]"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-md text-[color:var(--forge-text-muted)] transition-colors hover:bg-[color:var(--forge-card-hover)] hover:text-[color:var(--forge-text-primary)]"
               >
                 <Pencil className="h-3.5 w-3.5" />
               </button>

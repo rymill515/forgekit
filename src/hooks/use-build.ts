@@ -3,7 +3,9 @@ import type { Category } from "@/data/categories";
 import {
   type Build,
   type BuildCollection,
+  type CustomPart,
   type PartStatus,
+  CUSTOM_SELECTION,
   defaultBuild,
   defaultCollection,
   loadCollection,
@@ -130,6 +132,36 @@ export function useBuild() {
     [updateActive],
   );
 
+  /** Store a user-entered part for a category and make it the active choice. */
+  const setCustomPart = useCallback(
+    (category: Category, custom: CustomPart) => {
+      updateActive((b) => ({
+        ...b,
+        customParts: { ...b.customParts, [category]: custom },
+        selections: { ...b.selections, [category]: CUSTOM_SELECTION },
+      }));
+    },
+    [updateActive],
+  );
+
+  /** Remove a category's custom part; clear its selection if it was active. */
+  const removeCustomPart = useCallback(
+    (category: Category) => {
+      updateActive((b) => {
+        const customParts = { ...b.customParts };
+        delete customParts[category];
+        const selections = { ...b.selections };
+        const statuses = { ...b.statuses };
+        if (selections[category] === CUSTOM_SELECTION) {
+          delete selections[category];
+          delete statuses[category];
+        }
+        return { ...b, customParts, selections, statuses };
+      });
+    },
+    [updateActive],
+  );
+
   const setStatus = useCallback(
     (category: Category, status: PartStatus) => {
       updateActive((b) => ({
@@ -216,6 +248,8 @@ export function useBuild() {
     activeId: collection.activeId,
     hydrated,
     setSelection,
+    setCustomPart,
+    removeCustomPart,
     setStatus,
     setRetailComparison,
     setName,

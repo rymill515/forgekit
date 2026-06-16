@@ -18,7 +18,7 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { VendorLink } from "@/components/forge/VendorLink";
 import { CATEGORIES } from "@/data/categories";
-import { partById } from "@/data/parts";
+import { resolveSelection } from "@/lib/resolve-selection";
 import {
   type Build,
   type PartStatus,
@@ -57,13 +57,12 @@ export function BuildSummarySheet({
   // Line items in canonical category order, selected parts only.
   const lineItems = useMemo(() => {
     return CATEGORIES.map((meta) => {
-      const partId = build.selections[meta.id];
-      const part = partById(partId);
+      const part = resolveSelection(build, meta.id);
       if (!part) return null;
       const status: PartStatus = build.statuses[meta.id] ?? "researching";
       return { meta, part, status };
     }).filter((x): x is NonNullable<typeof x> => x !== null);
-  }, [build.selections, build.statuses]);
+  }, [build]);
 
   const receivedCount = lineItems.filter(
     (li) => li.status === "received",

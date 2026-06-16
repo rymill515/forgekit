@@ -1,5 +1,27 @@
 import type { Category } from "./categories";
 
+/** Powertrain family for movement parts. Lets users build quartz or
+ *  meca-quartz watches alongside automatics on the same SKX/NH35 platform. */
+export type MovementType = "automatic" | "quartz" | "meca-quartz";
+
+export const MOVEMENT_TYPE_META: Record<
+  MovementType,
+  { label: string; blurb: string }
+> = {
+  automatic: {
+    label: "Automatic",
+    blurb: "Self-winding mechanical. Smooth sweep, no battery.",
+  },
+  quartz: {
+    label: "Quartz",
+    blurb: "Battery-powered. Highly accurate, low-maintenance.",
+  },
+  "meca-quartz": {
+    label: "Meca-quartz",
+    blurb: "Quartz timekeeping with a mechanical chronograph module.",
+  },
+};
+
 export type Part = {
   id: string;
   category: Category;
@@ -14,6 +36,8 @@ export type Part = {
   compatibility?: string[];
   /** Tags this part needs from other selected parts. */
   requires?: string[];
+  /** Powertrain family — set on movement parts only. */
+  movementType?: MovementType;
 };
 
 const mid = (lo: number, hi: number) => Math.round(((lo + hi) / 2) * 100) / 100;
@@ -25,6 +49,7 @@ export const PARTS: Part[] = [
     category: "movement",
     name: "NH35A",
     brand: "Seiko",
+    movementType: "automatic",
     priceUsd: mid(18, 22),
     priceRange: [18, 22],
     description:
@@ -39,6 +64,7 @@ export const PARTS: Part[] = [
     category: "movement",
     name: "NH36A",
     brand: "Seiko",
+    movementType: "automatic",
     priceUsd: mid(22, 28),
     priceRange: [22, 28],
     description:
@@ -53,6 +79,7 @@ export const PARTS: Part[] = [
     category: "movement",
     name: "Miyota 9015",
     brand: "Miyota",
+    movementType: "automatic",
     priceUsd: mid(55, 75),
     priceRange: [55, 75],
     description:
@@ -67,6 +94,7 @@ export const PARTS: Part[] = [
     category: "movement",
     name: "NH38A",
     brand: "Seiko",
+    movementType: "automatic",
     priceUsd: mid(28, 35),
     priceRange: [28, 35],
     description: "No date variant. Clean dial option for no-date builds.",
@@ -74,6 +102,52 @@ export const PARTS: Part[] = [
     vendorUrl: "https://namokimods.com",
     compatibility: ["nh35-movement"],
     requires: ["nh35-feet"],
+  },
+  {
+    id: "mv-vh31",
+    category: "movement",
+    name: "VH31",
+    brand: "Seiko",
+    movementType: "quartz",
+    priceUsd: mid(15, 22),
+    priceRange: [15, 22],
+    description:
+      "Sweeping-seconds quartz — looks mechanical, ticks like a quartz. True NH35 drop-in: same feet, hands, and case footprint. No winding, battery-accurate.",
+    vendorName: "Namoki",
+    vendorUrl: "https://namokimods.com",
+    // Marketed as an NH35 drop-in, so it works with the same dials/hands/cases.
+    compatibility: ["nh35-movement"],
+    requires: ["nh35-feet"],
+  },
+  {
+    id: "mv-vk63",
+    category: "movement",
+    name: "VK63",
+    brand: "Seiko (TMI)",
+    movementType: "meca-quartz",
+    priceUsd: mid(40, 55),
+    priceRange: [40, 55],
+    description:
+      "Meca-quartz chronograph (60-min counter + small seconds). Quartz timekeeping, mechanical snap-back chrono hand. Pair with a chronograph dial + pusher case.",
+    vendorName: "Namoki",
+    vendorUrl: "https://namokimods.com",
+    compatibility: ["vk-chrono-movement"],
+    requires: ["nh35-feet", "pusher-case"],
+  },
+  {
+    id: "mv-vk64",
+    category: "movement",
+    name: "VK64",
+    brand: "Seiko (TMI)",
+    movementType: "meca-quartz",
+    priceUsd: mid(42, 58),
+    priceRange: [42, 58],
+    description:
+      "Meca-quartz chronograph with 3-6-9 subdial layout. Snappy chrono reset, quartz accuracy. Needs a chronograph dial + pushers.",
+    vendorName: "Namoki",
+    vendorUrl: "https://namokimods.com",
+    compatibility: ["vk-chrono-movement"],
+    requires: ["nh35-feet", "pusher-case"],
   },
 
   // ── Cases ──────────────────────────────────────────────────
@@ -114,6 +188,25 @@ export const PARTS: Part[] = [
     vendorName: "Secondhand Mods",
     vendorUrl: "https://secondhandmods.com",
     compatibility: ["nh35-feet", "lug-20mm", "case-explorer", "crystal-30mm"],
+  },
+  {
+    id: "case-chrono-panda",
+    category: "case",
+    name: "Chronograph Pusher Case 40mm",
+    brand: "Generic",
+    priceUsd: mid(55, 80),
+    priceRange: [55, 80],
+    description:
+      "Two-pusher chronograph case for VK63/VK64 meca-quartz builds. 40mm, 20mm lug. Drilled for chrono pushers.",
+    vendorName: "Namoki",
+    vendorUrl: "https://namokimods.com",
+    compatibility: [
+      "nh35-feet",
+      "pusher-case",
+      "lug-20mm",
+      "case-chrono",
+      "crystal-30mm",
+    ],
   },
 
   // ── Dials ──────────────────────────────────────────────────
@@ -159,6 +252,34 @@ export const PARTS: Part[] = [
     compatibility: ["nh35-feet"],
     requires: ["nh35-movement"],
   },
+  {
+    id: "dial-chrono-panda",
+    category: "dial",
+    name: "Panda Chronograph Dial",
+    brand: "Custom",
+    priceUsd: mid(28, 50),
+    priceRange: [28, 50],
+    description:
+      "White dial with black subdials — the classic panda chrono look. Cut for VK63/VK64 subdial layout.",
+    vendorName: "DLW Watches",
+    vendorUrl: "https://dlwwatches.com",
+    compatibility: ["nh35-feet"],
+    requires: ["vk-chrono-movement"],
+  },
+  {
+    id: "dial-chrono-reverse-panda",
+    category: "dial",
+    name: "Reverse Panda Chrono Dial",
+    brand: "Custom",
+    priceUsd: mid(28, 50),
+    priceRange: [28, 50],
+    description:
+      "Black dial with white subdials. Bold motorsport contrast. VK63/VK64 subdial spacing.",
+    vendorName: "DLW Watches",
+    vendorUrl: "https://dlwwatches.com",
+    compatibility: ["nh35-feet"],
+    requires: ["vk-chrono-movement"],
+  },
 
   // ── Hands ──────────────────────────────────────────────────
   {
@@ -198,6 +319,19 @@ export const PARTS: Part[] = [
     vendorUrl: "https://namokimods.com",
     requires: ["nh35-movement"],
   },
+  {
+    id: "hands-chrono-set",
+    category: "hands",
+    name: "Chronograph Hand Set",
+    brand: "Custom",
+    priceUsd: mid(15, 28),
+    priceRange: [15, 28],
+    description:
+      "Full meca-quartz hand set: hour, minute, central chrono seconds, plus subdial hands. Sized for VK63/VK64 posts.",
+    vendorName: "Namoki",
+    vendorUrl: "https://namokimods.com",
+    requires: ["vk-chrono-movement"],
+  },
 
   // ── Bezel & Insert ─────────────────────────────────────────
   {
@@ -235,6 +369,19 @@ export const PARTS: Part[] = [
     vendorName: "Secondhand Mods",
     vendorUrl: "https://secondhandmods.com",
     requires: ["case-explorer"],
+  },
+  {
+    id: "bezel-tachymeter",
+    category: "bezel",
+    name: "Tachymeter Bezel",
+    brand: "Custom",
+    priceUsd: mid(15, 28),
+    priceRange: [15, 28],
+    description:
+      "Fixed tachymeter bezel for the chronograph pusher case. Steel or black options.",
+    vendorName: "Namoki",
+    vendorUrl: "https://namokimods.com",
+    requires: ["case-chrono"],
   },
 
   // ── Crystal ────────────────────────────────────────────────

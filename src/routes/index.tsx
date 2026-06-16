@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { SiteNav } from "@/components/forge/SiteNav";
 import { SiteFooter } from "@/components/forge/SiteFooter";
+import heroWatches from "@/assets/hero-watches.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -60,15 +61,31 @@ function LandingPage() {
 
       <main className="flex-1">
         <section className="relative overflow-hidden border-b border-[color:var(--forge-border)]">
-          <div className="forge-grid-bg absolute inset-0 opacity-30" />
+          {/* Hero photo */}
+          <img
+            src={heroWatches}
+            alt="A custom chronograph, dive, and dress watch laid out on a wooden workbench"
+            className="absolute inset-0 h-full w-full object-cover"
+            loading="eager"
+            fetchPriority="high"
+          />
+          {/* Dark gradient overlay — keeps the headline legible over the photo */}
           <div
             className="absolute inset-0"
             style={{
               backgroundImage:
-                "radial-gradient(ellipse at top, color-mix(in oklab, var(--forge-accent) 18%, transparent), transparent 60%)",
+                "linear-gradient(to right, var(--forge-bg) 0%, color-mix(in oklab, var(--forge-bg) 78%, transparent) 42%, color-mix(in oklab, var(--forge-bg) 25%, transparent) 100%), linear-gradient(to bottom, color-mix(in oklab, var(--forge-bg) 40%, transparent) 0%, transparent 30%, var(--forge-bg) 100%)",
             }}
           />
-          <div className="relative mx-auto max-w-6xl px-4 pb-24 pt-20 sm:pt-28">
+          <div className="forge-grid-bg absolute inset-0 opacity-20" />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(ellipse at top left, color-mix(in oklab, var(--forge-accent) 16%, transparent), transparent 55%)",
+            }}
+          />
+          <div className="relative mx-auto flex min-h-[34rem] max-w-6xl flex-col justify-center px-4 pb-24 pt-20 sm:pt-28">
             <span className="inline-flex items-center gap-2 rounded-full border border-[color:var(--forge-border)] bg-[color:var(--forge-card)] px-3 py-1 text-xs text-[color:var(--forge-text-secondary)]">
               <Sparkles className="h-3 w-3 text-[color:var(--forge-accent)]" />
               v1.0 — WatchForge
@@ -98,7 +115,8 @@ function LandingPage() {
               </Link>
             </div>
             <p className="mt-4 text-xs text-[color:var(--forge-text-muted)]">
-              No account. Saved locally to your browser. Free forever.
+              Free forever. Sign in with Google or Apple to save your builds and
+              sync them across devices.
             </p>
           </div>
         </section>
@@ -158,7 +176,7 @@ function LandingPage() {
                 "Real parts seeded — NH35, Turtle, SRPD, sandwich dials, Tropic straps.",
                 "Compatibility hints flag mismatched feet or lug widths inline.",
                 "Vendor links per part. One click to Namoki, Crystaltimes, Strapcode.",
-                "Build name + notes saved automatically in your browser.",
+                "Builds saved to your account and synced across every device.",
               ].map((item) => (
                 <li
                   key={item}

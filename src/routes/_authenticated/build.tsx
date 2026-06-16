@@ -8,7 +8,7 @@ import { StickyBuildFooter } from "@/components/forge/StickyBuildFooter";
 import { BuildSummarySheet } from "@/components/forge/BuildSummarySheet";
 import { BuildNotes } from "@/components/forge/BuildNotes";
 import { CATEGORIES } from "@/data/categories";
-import { partById } from "@/data/parts";
+import { resolveSelection } from "@/lib/resolve-selection";
 import { useBuild } from "@/hooks/use-build";
 import { useCompatibility } from "@/hooks/use-compatibility";
 
@@ -38,6 +38,8 @@ function BuildPage() {
     builds,
     activeId,
     setSelection,
+    setCustomPart,
+    removeCustomPart,
     setStatus,
     setRetailComparison,
     setName,
@@ -52,11 +54,11 @@ function BuildPage() {
   const [summaryOpen, setSummaryOpen] = useState(false);
 
   const total = useMemo(() => {
-    return Object.values(build.selections).reduce((sum, id) => {
-      const p = partById(id);
-      return sum + (p?.priceUsd ?? 0);
-    }, 0);
-  }, [build.selections]);
+    return CATEGORIES.reduce(
+      (sum, c) => sum + (resolveSelection(build, c.id)?.priceUsd ?? 0),
+      0,
+    );
+  }, [build]);
 
   return (
     <div className="flex min-h-screen flex-col bg-[color:var(--forge-bg)] text-[color:var(--forge-text-primary)]">
@@ -101,6 +103,8 @@ function BuildPage() {
                 build={build}
                 defaultOpen={i === 0 && !build.selections[meta.id]}
                 onSelect={(partId) => setSelection(meta.id, partId)}
+                onSetCustom={(custom) => setCustomPart(meta.id, custom)}
+                onRemoveCustom={() => removeCustomPart(meta.id)}
               />
             ))}
           </div>
