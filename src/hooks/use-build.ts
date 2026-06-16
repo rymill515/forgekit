@@ -92,24 +92,7 @@ export function useBuild() {
     };
   }, [collection, hydrated, user, cloudSynced]);
 
-/** Merge local and remote build collections — newest updatedAt wins per build id. */
-function mergeCollections(local: BuildCollection, remote: BuildCollection): BuildCollection {
-  const byId = new Map<string, Build>();
-  for (const b of local.builds) byId.set(b.id, b);
-  for (const b of remote.builds) {
-    const existing = byId.get(b.id);
-    if (!existing || new Date(b.updatedAt) >= new Date(existing.updatedAt)) {
-      byId.set(b.id, b);
-    }
-  }
-  const builds = Array.from(byId.values());
-  const activeId = builds.some((b) => b.id === remote.activeId)
-    ? remote.activeId
-    : builds[0]?.id ?? local.activeId;
-  return { activeId, builds };
-}
 
-function _unused() {
 
   const build = useMemo(
     () =>
