@@ -3,13 +3,19 @@ import { Save, Pencil, AlertTriangle, Receipt } from "lucide-react";
 import type { Build } from "@/lib/build-storage";
 import { CATEGORIES } from "@/data/categories";
 import { BuildSwitcher } from "@/components/forge/BuildSwitcher";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import type { Warning } from "@/hooks/use-compatibility";
 
 type Props = {
   build: Build;
   builds: Build[];
   activeId: string;
   total: number;
-  warningCount: number;
+  warnings: Warning[];
   onRename: (name: string) => void;
   onOpenSummary: () => void;
   onSwitch: (id: string) => void;
