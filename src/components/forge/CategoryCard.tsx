@@ -145,6 +145,7 @@ export function CategoryCard({
                 part={p}
                 selected={p.id === selectedId}
                 warning={predictWarning(build, p)}
+                recommendation={predictRecommendation(build, p)}
                 onSelect={() => {
                   onSelect(p.id === selectedId ? null : p.id);
                   setOpen(false);
