@@ -5,14 +5,13 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * ForgeKit / WatchForge design tokens.
- * Generic --forge-* tokens drive the entire UI so the template can be
- * reskinned for other niche verticals (Gun/Bike/PC Forge) by swapping
- * the values here only.
+ * WatchForge design tokens.
+ * The --forge-* tokens drive the entire UI, so the whole theme can be
+ * adjusted by changing the values here only.
  */
 
 :root {
-  /* ForgeKit generic tokens */
+  /* Theme tokens */
   --forge-bg: oklch(0.21 0.04 257);              /* #0F172A slate-900 */
   --forge-bg-elevated: oklch(0.27 0.04 257);     /* #1E293B slate-800 */
   --forge-card: oklch(0.27 0.04 257);

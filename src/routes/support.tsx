@@ -50,20 +50,6 @@ function SupportPage() {
               <TipJarButton />
             </div>
           </div>
-
-          <div className="mt-6 rounded-xl border border-[color:var(--forge-border)] bg-[color:var(--forge-card)] p-6">
-            <h2 className="font-display text-lg font-semibold">
-              Want the template?
-            </h2>
-            <p className="mt-1 text-sm text-[color:var(--forge-text-secondary)]">
-              WatchForge is built on ForgeKit — a generic configurator template
-              for any hobbyist niche. Bike builds, PC builds, fishing setups,
-              you name it. Reskin in minutes.
-            </p>
-            <p className="mt-3 text-xs text-[color:var(--forge-text-muted)]">
-              Coming to Gumroad soon.
-            </p>
-          </div>
         </section>
       </main>
       <SiteFooter />

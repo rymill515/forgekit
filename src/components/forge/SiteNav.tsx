@@ -27,9 +27,6 @@ export function SiteNav() {
           <span className="font-display text-lg font-semibold tracking-tight">
             Watch<span className="text-[color:var(--forge-accent)]">Forge</span>
           </span>
-          <span className="hidden text-[10px] uppercase tracking-[0.18em] text-[color:var(--forge-text-muted)] sm:inline">
-            by ForgeKit
-          </span>
         </Link>
         <nav className="flex items-center gap-5">
           <Link to="/build" className={linkBase} activeProps={activeProps}>

@@ -5,7 +5,6 @@ import {
   Cog,
   DollarSign,
   ShoppingCart,
-  Sparkles,
 } from "lucide-react";
 import { SiteNav } from "@/components/forge/SiteNav";
 import { SiteFooter } from "@/components/forge/SiteFooter";
@@ -86,11 +85,7 @@ function LandingPage() {
             }}
           />
           <div className="relative mx-auto flex min-h-[34rem] max-w-6xl flex-col justify-center px-4 pb-24 pt-20 sm:pt-28">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[color:var(--forge-border)] bg-[color:var(--forge-card)] px-3 py-1 text-xs text-[color:var(--forge-text-secondary)]">
-              <Sparkles className="h-3 w-3 text-[color:var(--forge-accent)]" />
-              v1.0 — WatchForge
-            </span>
-            <h1 className="mt-6 max-w-3xl font-display text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
+            <h1 className="max-w-3xl font-display text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
               Plan your next watch mod.{" "}
               <span className="forge-gradient-text">Down to the dollar.</span>
             </h1>

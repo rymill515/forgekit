@@ -83,7 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "A free planner for watch modders. Configure your build, see the cost live, and track every part.",
       },
-      { name: "author", content: "ForgeKit" },
+      { name: "author", content: "WatchForge" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
