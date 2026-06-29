@@ -55,10 +55,18 @@ export function CategoryCard({
     return order.filter((t) => present.has(t));
   }, [isMovement, allOptions]);
 
-  const options =
+  const filtered =
     isMovement && typeFilter !== "all"
       ? allOptions.filter((p) => p.movementType === typeFilter)
       : allOptions;
+
+  // Sort recommended parts to the top so users see suggested matches first.
+  const options = useMemo(() => {
+    return [...filtered]
+      .map((p) => ({ p, rec: predictRecommendation(build, p) }))
+      .sort((a, b) => (a.rec ? 0 : 1) - (b.rec ? 0 : 1))
+      .map(({ p }) => p);
+  }, [filtered, build]);
 
   // Display info for the current selection — curated part or custom entry.
   const selectedDisplay = customSelected && customPart
