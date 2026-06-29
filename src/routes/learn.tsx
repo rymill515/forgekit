@@ -1,8 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, BookOpen, Youtube, Users, ExternalLink, Star } from "lucide-react";
 import { SiteNav } from "@/components/forge/SiteNav";
 import { SiteFooter } from "@/components/forge/SiteFooter";
 import { GLOSSARY, COMPATIBILITY_TIPS } from "@/data/glossary";
+import { RESOURCE_SECTIONS, type ResourceKind } from "@/data/resources";
+
+const KIND_ICON: Record<ResourceKind, typeof BookOpen> = {
+  guide: BookOpen,
+  video: Youtube,
+  community: Users,
+};
+
+const KIND_LABEL: Record<ResourceKind, string> = {
+  guide: "Article",
+  video: "Video",
+  community: "Community",
+};
 
 export const Route = createFileRoute("/learn")({
   head: () => ({
