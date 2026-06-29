@@ -69,7 +69,28 @@ function AuthPage() {
             Continue with Apple
           </button>
 
-          <p className="pt-4 text-center text-xs text-[color:var(--forge-text-muted)]">
+          <div className="relative py-2">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-[color:var(--forge-border)]" />
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-[color:var(--forge-bg)] px-2 text-[11px] uppercase tracking-wider text-[color:var(--forge-text-muted)]">
+                or
+              </span>
+            </div>
+          </div>
+
+          <Link
+            to="/build"
+            className="flex w-full items-center justify-center rounded-md border border-[color:var(--forge-border)] px-4 py-2.5 text-sm font-medium text-[color:var(--forge-text-secondary)] transition-colors hover:bg-[color:var(--forge-card-hover)] hover:text-[color:var(--forge-text-primary)]"
+          >
+            Continue as guest
+          </Link>
+          <p className="text-center text-[11px] text-[color:var(--forge-text-muted)]">
+            Try the configurator without an account. Builds won&#x2019;t be saved.
+          </p>
+
+          <p className="pt-2 text-center text-xs text-[color:var(--forge-text-muted)]">
             <Link to="/" className="hover:text-[color:var(--forge-text-secondary)]">
               ← Back to home
             </Link>

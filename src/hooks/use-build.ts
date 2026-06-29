@@ -34,11 +34,14 @@ export function useBuild() {
   const cloudTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastUserIdRef = useRef<string | null>(null);
 
-  // Hydrate from localStorage on mount.
+  // Hydrate once auth state is known. Signed-in users get their cached
+  // builds; guests start with a fresh, in-memory-only collection (nothing
+  // is persisted, so they can try the configurator without an account).
   useEffect(() => {
-    setCollection(loadCollection());
+    if (authLoading || hydrated) return;
+    setCollection(user ? loadCollection() : defaultCollection());
     setHydrated(true);
-  }, []);
+  }, [authLoading, user, hydrated]);
 
   // Pull from cloud when the signed-in user changes; merge by newest updatedAt per build.
   useEffect(() => {
@@ -71,13 +74,14 @@ export function useBuild() {
     })();
   }, [user, authLoading, hydrated]);
 
-  // Persist to localStorage and (if signed in) cloud.
+  // Persist to localStorage and cloud — signed-in users only.
+  // Guests are intentionally ephemeral: nothing is written anywhere.
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || !user) return;
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => saveCollection(collection), 250);
 
-    if (user && cloudSynced) {
+    if (cloudSynced) {
       if (cloudTimer.current) clearTimeout(cloudTimer.current);
       cloudTimer.current = setTimeout(async () => {
         const { error } = await supabase.from("user_builds").upsert({
@@ -247,6 +251,8 @@ export function useBuild() {
     builds: collection.builds,
     activeId: collection.activeId,
     hydrated,
+    /** True when browsing without an account — builds are not saved. */
+    isGuest: !authLoading && !user,
     setSelection,
     setCustomPart,
     removeCustomPart,

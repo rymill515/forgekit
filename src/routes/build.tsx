@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { RotateCcw } from "lucide-react";
 import { SiteNav } from "@/components/forge/SiteNav";
@@ -12,7 +12,8 @@ import { resolveSelection } from "@/lib/resolve-selection";
 import { useBuild } from "@/hooks/use-build";
 import { useCompatibility } from "@/hooks/use-compatibility";
 
-export const Route = createFileRoute("/_authenticated/build")({
+export const Route = createFileRoute("/build")({
+  ssr: false,
   head: () => ({
     meta: [
       { title: "Build configurator — WatchForge" },
@@ -37,6 +38,7 @@ function BuildPage() {
     build,
     builds,
     activeId,
+    isGuest,
     setSelection,
     setCustomPart,
     removeCustomPart,
@@ -66,6 +68,24 @@ function BuildPage() {
 
       <main className="flex-1">
         <div className="mx-auto max-w-4xl px-4 pb-32 pt-10">
+          {isGuest && (
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[color:var(--forge-accent)]/30 bg-[color:var(--forge-accent)]/10 px-4 py-3">
+              <p className="text-sm text-[color:var(--forge-text-secondary)]">
+                <span className="font-medium text-[color:var(--forge-text-primary)]">
+                  You&#x2019;re exploring as a guest.
+                </span>{" "}
+                Your build won&#x2019;t be saved. Sign in to keep it and sync
+                across devices.
+              </p>
+              <Link
+                to="/auth"
+                className="inline-flex shrink-0 items-center rounded-md bg-[color:var(--forge-accent)] px-3 py-1.5 text-xs font-semibold text-[color:var(--forge-accent-text)] transition-colors hover:bg-[color:var(--forge-accent-hover)]"
+              >
+                Sign in to save
+              </Link>
+            </div>
+          )}
+
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-[color:var(--forge-text-muted)]">
