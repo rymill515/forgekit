@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ChevronDown, Check, AlertTriangle, Plus, Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, Check, AlertTriangle, Plus, Pencil, Trash2, Sparkles } from "lucide-react";
 import type { CategoryMeta } from "@/data/categories";
 import {
   partById,
@@ -8,7 +8,7 @@ import {
   type MovementType,
   type Part,
 } from "@/data/parts";
-import { predictWarning } from "@/hooks/use-compatibility";
+import { predictWarning, predictRecommendation } from "@/hooks/use-compatibility";
 import {
   type Build,
   type CustomPart,
