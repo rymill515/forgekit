@@ -302,21 +302,31 @@ function PartTile({
   part,
   selected,
   warning,
+  recommendation,
   onSelect,
 }: {
   part: Part;
   selected: boolean;
   warning: string | null;
+  recommendation: string | null;
   onSelect: () => void;
 }) {
+  const showRec = !!recommendation && !selected && !warning;
   return (
     <div
       className={`group relative flex flex-col gap-2 rounded-lg border p-3 transition-colors ${
         selected
           ? "border-[color:var(--forge-accent)] bg-[color:var(--forge-card)]"
-          : "border-[color:var(--forge-border)] bg-[color:var(--forge-card)] hover:border-[color:var(--forge-border-strong)]"
+          : showRec
+            ? "border-[color:var(--forge-success)]/60 bg-[color:var(--forge-card)] hover:border-[color:var(--forge-success)]"
+            : "border-[color:var(--forge-border)] bg-[color:var(--forge-card)] hover:border-[color:var(--forge-border-strong)]"
       }`}
     >
+      {showRec && (
+        <span className="absolute -top-2 left-3 inline-flex items-center gap-1 rounded-full bg-[color:var(--forge-success)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[color:var(--forge-bg)]">
+          <Sparkles className="h-2.5 w-2.5" /> Recommended
+        </span>
+      )}
       <button
         type="button"
         onClick={onSelect}
@@ -352,6 +362,12 @@ function PartTile({
           </span>
         )}
       </div>
+      {showRec && (
+        <p className="flex items-start gap-1 rounded-md bg-[color:var(--forge-success)]/10 px-2 py-1 text-[11px] text-[color:var(--forge-success)]">
+          <Sparkles className="mt-[1px] h-3 w-3 shrink-0" />
+          {recommendation}
+        </p>
+      )}
       {warning && !selected && (
         <p className="flex items-start gap-1 rounded-md bg-[color:var(--forge-warning)]/10 px-2 py-1 text-[11px] text-[color:var(--forge-warning)]">
           <AlertTriangle className="mt-[1px] h-3 w-3 shrink-0" />
