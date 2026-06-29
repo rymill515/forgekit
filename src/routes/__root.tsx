@@ -86,6 +86,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "author", content: "WatchForge" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { property: "og:title", content: "WatchForge — Plan your next watch mod build" },
+      { name: "twitter:title", content: "WatchForge — Plan your next watch mod build" },
+      { name: "description", content: "ForgeKit is a modern web app template for building and showcasing projects." },
+      { property: "og:description", content: "ForgeKit is a modern web app template for building and showcasing projects." },
+      { name: "twitter:description", content: "ForgeKit is a modern web app template for building and showcasing projects." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5cc76642-64a0-4048-9711-d9ece2c07fdb/id-preview-dba874d8--8e41142b-1ac6-4fe9-b67a-ff49f5ea8acd.lovable.app-1782768565665.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5cc76642-64a0-4048-9711-d9ece2c07fdb/id-preview-dba874d8--8e41142b-1ac6-4fe9-b67a-ff49f5ea8acd.lovable.app-1782768565665.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
