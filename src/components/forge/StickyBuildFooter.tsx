@@ -29,7 +29,7 @@ export function StickyBuildFooter({
   builds,
   activeId,
   total,
-  warningCount,
+  warnings,
   onRename,
   onOpenSummary,
   onSwitch,
@@ -37,6 +37,7 @@ export function StickyBuildFooter({
   onDuplicate,
   onDelete,
 }: Props) {
+  const warningCount = warnings.length;
   const selectedCount = Object.values(build.selections).filter(Boolean).length;
   const totalCategories = CATEGORIES.length;
   const [editing, setEditing] = useState(false);
