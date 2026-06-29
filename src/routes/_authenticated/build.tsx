@@ -120,7 +120,7 @@ function BuildPage() {
         builds={builds}
         activeId={activeId}
         total={total}
-        warningCount={warnings.length}
+        warnings={warnings}
         onRename={setName}
         onOpenSummary={() => setSummaryOpen(true)}
         onSwitch={switchBuild}

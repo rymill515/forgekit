@@ -3,13 +3,19 @@ import { Save, Pencil, AlertTriangle, Receipt } from "lucide-react";
 import type { Build } from "@/lib/build-storage";
 import { CATEGORIES } from "@/data/categories";
 import { BuildSwitcher } from "@/components/forge/BuildSwitcher";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import type { Warning } from "@/hooks/use-compatibility";
 
 type Props = {
   build: Build;
   builds: Build[];
   activeId: string;
   total: number;
-  warningCount: number;
+  warnings: Warning[];
   onRename: (name: string) => void;
   onOpenSummary: () => void;
   onSwitch: (id: string) => void;
@@ -23,7 +29,7 @@ export function StickyBuildFooter({
   builds,
   activeId,
   total,
-  warningCount,
+  warnings,
   onRename,
   onOpenSummary,
   onSwitch,
@@ -31,6 +37,7 @@ export function StickyBuildFooter({
   onDuplicate,
   onDelete,
 }: Props) {
+  const warningCount = warnings.length;
   const selectedCount = Object.values(build.selections).filter(Boolean).length;
   const totalCategories = CATEGORIES.length;
   const [editing, setEditing] = useState(false);
@@ -104,10 +111,44 @@ export function StickyBuildFooter({
 
         <div className="flex items-center gap-4">
           {warningCount > 0 && (
-            <span className="inline-flex items-center gap-1 rounded-md bg-[color:var(--forge-warning)]/10 px-2 py-1 text-xs text-[color:var(--forge-warning)]">
-              <AlertTriangle className="h-3 w-3" />
-              {warningCount} warning{warningCount === 1 ? "" : "s"}
-            </span>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-md bg-[color:var(--forge-warning)]/10 px-2 py-1 text-xs text-[color:var(--forge-warning)] transition-colors hover:bg-[color:var(--forge-warning)]/20"
+                  aria-label="View compatibility warnings"
+                >
+                  <AlertTriangle className="h-3 w-3" />
+                  {warningCount} warning{warningCount === 1 ? "" : "s"}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                side="top"
+                className="w-80 border-[color:var(--forge-border)] bg-[color:var(--forge-card)] p-0 text-[color:var(--forge-text-primary)]"
+              >
+                <div className="border-b border-[color:var(--forge-border)] px-4 py-3">
+                  <p className="font-display text-sm font-semibold">
+                    Out of spec
+                  </p>
+                  <p className="text-[11px] text-[color:var(--forge-text-secondary)]">
+                    These parts don't fit together yet. Swap one or add a matching piece.
+                  </p>
+                </div>
+                <ul className="max-h-72 divide-y divide-[color:var(--forge-border)] overflow-auto">
+                  {warnings.map((w) => (
+                    <li key={w.partId} className="px-4 py-3 text-xs">
+                      <p className="font-medium text-[color:var(--forge-warning)]">
+                        {w.partName}
+                      </p>
+                      <p className="mt-1 text-[color:var(--forge-text-secondary)]">
+                        {w.message}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </PopoverContent>
+            </Popover>
           )}
           <div className="text-right">
             <p className="text-[10px] uppercase tracking-[0.18em] text-[color:var(--forge-text-muted)]">

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ChevronDown, Check, AlertTriangle, Plus, Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, Check, AlertTriangle, Plus, Pencil, Trash2, Sparkles } from "lucide-react";
 import type { CategoryMeta } from "@/data/categories";
 import {
   partById,
@@ -8,7 +8,7 @@ import {
   type MovementType,
   type Part,
 } from "@/data/parts";
-import { predictWarning } from "@/hooks/use-compatibility";
+import { predictWarning, predictRecommendation } from "@/hooks/use-compatibility";
 import {
   type Build,
   type CustomPart,
@@ -55,10 +55,18 @@ export function CategoryCard({
     return order.filter((t) => present.has(t));
   }, [isMovement, allOptions]);
 
-  const options =
+  const filtered =
     isMovement && typeFilter !== "all"
       ? allOptions.filter((p) => p.movementType === typeFilter)
       : allOptions;
+
+  // Sort recommended parts to the top so users see suggested matches first.
+  const options = useMemo(() => {
+    return [...filtered]
+      .map((p) => ({ p, rec: predictRecommendation(build, p) }))
+      .sort((a, b) => (a.rec ? 0 : 1) - (b.rec ? 0 : 1))
+      .map(({ p }) => p);
+  }, [filtered, build]);
 
   // Display info for the current selection — curated part or custom entry.
   const selectedDisplay = customSelected && customPart
@@ -137,6 +145,7 @@ export function CategoryCard({
                 part={p}
                 selected={p.id === selectedId}
                 warning={predictWarning(build, p)}
+                recommendation={predictRecommendation(build, p)}
                 onSelect={() => {
                   onSelect(p.id === selectedId ? null : p.id);
                   setOpen(false);
@@ -293,21 +302,31 @@ function PartTile({
   part,
   selected,
   warning,
+  recommendation,
   onSelect,
 }: {
   part: Part;
   selected: boolean;
   warning: string | null;
+  recommendation: string | null;
   onSelect: () => void;
 }) {
+  const showRec = !!recommendation && !selected && !warning;
   return (
     <div
       className={`group relative flex flex-col gap-2 rounded-lg border p-3 transition-colors ${
         selected
           ? "border-[color:var(--forge-accent)] bg-[color:var(--forge-card)]"
-          : "border-[color:var(--forge-border)] bg-[color:var(--forge-card)] hover:border-[color:var(--forge-border-strong)]"
+          : showRec
+            ? "border-[color:var(--forge-success)]/60 bg-[color:var(--forge-card)] hover:border-[color:var(--forge-success)]"
+            : "border-[color:var(--forge-border)] bg-[color:var(--forge-card)] hover:border-[color:var(--forge-border-strong)]"
       }`}
     >
+      {showRec && (
+        <span className="absolute -top-2 left-3 inline-flex items-center gap-1 rounded-full bg-[color:var(--forge-success)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[color:var(--forge-bg)]">
+          <Sparkles className="h-2.5 w-2.5" /> Recommended
+        </span>
+      )}
       <button
         type="button"
         onClick={onSelect}
@@ -343,6 +362,12 @@ function PartTile({
           </span>
         )}
       </div>
+      {showRec && (
+        <p className="flex items-start gap-1 rounded-md bg-[color:var(--forge-success)]/10 px-2 py-1 text-[11px] text-[color:var(--forge-success)]">
+          <Sparkles className="mt-[1px] h-3 w-3 shrink-0" />
+          {recommendation}
+        </p>
+      )}
       {warning && !selected && (
         <p className="flex items-start gap-1 rounded-md bg-[color:var(--forge-warning)]/10 px-2 py-1 text-[11px] text-[color:var(--forge-warning)]">
           <AlertTriangle className="mt-[1px] h-3 w-3 shrink-0" />
